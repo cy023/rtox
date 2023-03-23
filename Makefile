@@ -187,7 +187,7 @@ systeminfo:
 
 ## Preprocess
 $(BUILD_DIR)/%.i: %.c Makefile | $(BUILD_DIR)
-	$(CC) -E -D__SAME54P20A__ $(C_INCLUDES) $< -o $@
+	$(CC) -E $(C_INCLUDES) $< -o $@
 
 ## Compile
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
