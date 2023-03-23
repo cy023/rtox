@@ -44,6 +44,9 @@ C_INCLUDES += -IDrivers/w25q128jv
 C_INCLUDES += -IDrivers/Library/Device/Nuvoton_M480/Include
 C_INCLUDES += -IDrivers/Library/StdDriver/inc
 C_INCLUDES += -IMiddleware/LittleFS
+C_INCLUDES += -IMiddleware/FreeRTOS/Source/include
+C_INCLUDES += -IMiddleware/FreeRTOS/Source/portable/GCC/ARM_CM4F
+C_INCLUDES += -IMiddleware/FreeRTOS/Demo/Common/include
 
 ## Source Path
 C_SOURCES += $(wildcard Device_Startup/*.c)
@@ -58,6 +61,11 @@ C_SOURCES += Drivers/Library/StdDriver/src/clk.c
 C_SOURCES += Drivers/Library/StdDriver/src/gpio.c
 C_SOURCES += Drivers/Library/StdDriver/src/spi.c
 C_SOURCES += $(wildcard Middleware/LittleFS/*.c)
+C_SOURCES += $(wildcard Middleware/FreeRTOS/Source/*.c)
+C_SOURCES += Middleware/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
+C_SOURCES += Middleware/FreeRTOS/Source/portable/MemMang/heap_4.c
+# C_SOURCES += $(wildcard Middleware/FreeRTOS/Demo/Common/Minimal/*.c)
+C_SOURCES += $(wildcard Middleware/FreeRTOS/Demo/Common/Full/*.c)
 
 ASM_SOURCES += $(wildcard Device_Startup/*.S)
 
