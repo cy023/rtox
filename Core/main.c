@@ -2,23 +2,25 @@
  * FreeRTOS Kernel V10.0.0
  * Copyright (C) 2017 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software. If you wish to use our Amazon
- * FreeRTOS name, please do so in a fair use way that does not cause confusion.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software. If you wish to use our
+ * Amazon FreeRTOS name, please do so in a fair use way that does not cause
+ * confusion.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  *
  * http://www.FreeRTOS.org
  * http://aws.amazon.com/freertos
@@ -30,9 +32,10 @@
 
 /* Kernel includes. */
 #include "FreeRTOS.h"
+#include "semphr.h"
 #include "task.h"
 #include "timers.h"
-#include "semphr.h"
+
 
 /* Demo application includes. */
 #include "led_task.h"
@@ -42,41 +45,41 @@
 #include "system.h"
 
 /* Priorities for the demo application tasks. */
-#define mainFLASH_TASK_PRIORITY             (tskIDLE_PRIORITY + 1UL)
-#define mainQUEUE_POLL_PRIORITY             (tskIDLE_PRIORITY + 2UL)
-#define mainSEM_TEST_PRIORITY               (tskIDLE_PRIORITY + 1UL)
-#define mainBLOCK_Q_PRIORITY                (tskIDLE_PRIORITY + 2UL)
-#define mainCREATOR_TASK_PRIORITY           (tskIDLE_PRIORITY + 3UL)
-#define mainFLOP_TASK_PRIORITY              (tskIDLE_PRIORITY)
-#define mainCHECK_TASK_PRIORITY             (tskIDLE_PRIORITY + 3UL)
+#define mainFLASH_TASK_PRIORITY   (tskIDLE_PRIORITY + 1UL)
+#define mainQUEUE_POLL_PRIORITY   (tskIDLE_PRIORITY + 2UL)
+#define mainSEM_TEST_PRIORITY     (tskIDLE_PRIORITY + 1UL)
+#define mainBLOCK_Q_PRIORITY      (tskIDLE_PRIORITY + 2UL)
+#define mainCREATOR_TASK_PRIORITY (tskIDLE_PRIORITY + 3UL)
+#define mainFLOP_TASK_PRIORITY    (tskIDLE_PRIORITY)
+#define mainCHECK_TASK_PRIORITY   (tskIDLE_PRIORITY + 3UL)
 
-#define mainCHECK_TASK_STACK_SIZE           (configMINIMAL_STACK_SIZE)
+#define mainCHECK_TASK_STACK_SIZE (configMINIMAL_STACK_SIZE)
 
 /* The time between cycles of the 'check' task. */
-#define mainCHECK_DELAY                     ((portTickType) 5000 / portTICK_RATE_MS)
+#define mainCHECK_DELAY ((portTickType) 5000 / portTICK_RATE_MS)
 
 /* The LED used by the check timer. */
-#define mainCHECK_LED                       (3UL)
+#define mainCHECK_LED (3UL)
 
 /* A block time of zero simply means "don't block". */
-#define mainDONT_BLOCK                      (0UL)
+#define mainDONT_BLOCK (0UL)
 
 /* The period after which the check timer will expire, in ms, provided no errors
 have been reported by any of the standard demo tasks.  ms are converted to the
 equivalent in ticks using the portTICK_RATE_MS constant. */
-#define mainCHECK_TIMER_PERIOD_MS           (3000UL / portTICK_RATE_MS)
+#define mainCHECK_TIMER_PERIOD_MS (3000UL / portTICK_RATE_MS)
 
 /* The period at which the check timer will expire, in ms, if an error has been
 reported in one of the standard demo tasks.  ms are converted to the equivalent
 in ticks using the portTICK_RATE_MS constant. */
-#define mainERROR_CHECK_TIMER_PERIOD_MS     (200UL / portTICK_RATE_MS)
+#define mainERROR_CHECK_TIMER_PERIOD_MS (200UL / portTICK_RATE_MS)
 
 /* Set mainCREATE_SIMPLE_LED_FLASHER_DEMO_ONLY to 1 to create a simple demo.
 Set mainCREATE_SIMPLE_LED_FLASHER_DEMO_ONLY to 0 to create a much more
 comprehensive test application.  See the comments at the top of this file, and
 the documentation page on the http://www.FreeRTOS.org web site for more
 information. */
-#define mainCREATE_SIMPLE_LED_FLASHER_DEMO_ONLY     0
+#define mainCREATE_SIMPLE_LED_FLASHER_DEMO_ONLY 0
 
 /*-----------------------------------------------------------*/
 
@@ -94,7 +97,7 @@ int main(void)
     /* The following function will only create more tasks and timers if
     mainCREATE_SIMPLE_LED_FLASHER_DEMO_ONLY is set to 0 (at the top of this
     file).  See the comments at the top of this file for more information. */
-    //prvOptionallyCreateComprehensveTestApplication();
+    // prvOptionallyCreateComprehensveTestApplication();
 
     printf("FreeRTOS is starting ...\n");
 
@@ -106,7 +109,8 @@ int main(void)
     insufficient FreeRTOS heap memory available for the idle and/or timer tasks
     to be created.  See the memory management section on the FreeRTOS web site
     for more details. */
-    for (;;);
+    for (;;)
+        ;
 }
 /*-----------------------------------------------------------*/
 
@@ -123,7 +127,8 @@ void vApplicationMallocFailedHook(void)
     to query the size of free heap space that remains (although it does not
     provide information on how the remaining heap might be fragmented). */
     taskDISABLE_INTERRUPTS();
-    for (;;);
+    for (;;)
+        ;
 }
 /*-----------------------------------------------------------*/
 
@@ -150,7 +155,8 @@ void vApplicationStackOverflowHook(xTaskHandle pxTask, signed char *pcTaskName)
     configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2.  This hook
     function is called if a stack overflow is detected. */
     taskDISABLE_INTERRUPTS();
-    for (;;);
+    for (;;)
+        ;
 }
 /*-----------------------------------------------------------*/
 

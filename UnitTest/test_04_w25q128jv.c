@@ -2,8 +2,8 @@
  * @file test_04_w25q128jv.c
  * @author cy023
  * @date 2023.03.20
- * @brief 
- * 
+ * @brief
+ *
  */
 
 #include <stdio.h>
@@ -32,7 +32,7 @@ int main()
     printf("[test04]: Flash W25Q128JV ...\n\n");
 
     w25q128jv_init();
-    
+
     for (int i = 0; i < 256; i++) {
         buffer[i] = 0;
     }

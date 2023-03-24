@@ -2,15 +2,15 @@
  * @file test_05_littlefs.c
  * @author cy023
  * @date 2023.03.20
- * @brief 
- * 
+ * @brief
+ *
  */
 
 #include <stdio.h>
 #include "NuMicro.h"
-#include "system.h"
 #include "lfs.h"
 #include "lfs_port.h"
+#include "system.h"
 
 // entry point
 void lfs_test(void)
@@ -27,13 +27,16 @@ void lfs_test(void)
 
     // read current count
     uint32_t boot_count = 0;
-    lfs_file_open(&lfs_w25q128jv, &lfs_file_w25q128jv, "boot_count", LFS_O_RDWR | LFS_O_CREAT);
-    lfs_file_read(&lfs_w25q128jv, &lfs_file_w25q128jv, &boot_count, sizeof(boot_count));
+    lfs_file_open(&lfs_w25q128jv, &lfs_file_w25q128jv, "boot_count",
+                  LFS_O_RDWR | LFS_O_CREAT);
+    lfs_file_read(&lfs_w25q128jv, &lfs_file_w25q128jv, &boot_count,
+                  sizeof(boot_count));
 
     // update boot count
     boot_count += 1;
     lfs_file_rewind(&lfs_w25q128jv, &lfs_file_w25q128jv);
-    lfs_file_write(&lfs_w25q128jv, &lfs_file_w25q128jv, &boot_count, sizeof(boot_count));
+    lfs_file_write(&lfs_w25q128jv, &lfs_file_w25q128jv, &boot_count,
+                   sizeof(boot_count));
 
     // remember the storage is not updated until the file is closed successfully
     lfs_file_close(&lfs_w25q128jv, &lfs_file_w25q128jv);
