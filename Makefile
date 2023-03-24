@@ -2,7 +2,7 @@
 # @file   Makefile
 # @author cy023@MVMC-Lab (cyyang023@gmail.com)
 # @date   2022.09.17
-# @brief  Makefile for NuM487 project.
+# @brief  Makefile for rtox project.
 
 ################################################################################
 # User Settings
@@ -46,7 +46,6 @@ C_INCLUDES += -IDrivers/Library/StdDriver/inc
 C_INCLUDES += -IMiddleware/LittleFS
 C_INCLUDES += -IMiddleware/FreeRTOS/Source/include
 C_INCLUDES += -IMiddleware/FreeRTOS/Source/portable/GCC/ARM_CM4F
-C_INCLUDES += -IMiddleware/FreeRTOS/Demo/Common/include
 
 ## Source Path
 C_SOURCES += $(wildcard Device_Startup/*.c)
@@ -64,8 +63,6 @@ C_SOURCES += $(wildcard Middleware/LittleFS/*.c)
 C_SOURCES += $(wildcard Middleware/FreeRTOS/Source/*.c)
 C_SOURCES += Middleware/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 C_SOURCES += Middleware/FreeRTOS/Source/portable/MemMang/heap_4.c
-# C_SOURCES += $(wildcard Middleware/FreeRTOS/Demo/Common/Minimal/*.c)
-C_SOURCES += $(wildcard Middleware/FreeRTOS/Demo/Common/Full/*.c)
 
 ASM_SOURCES += $(wildcard Device_Startup/*.S)
 
@@ -97,8 +94,8 @@ APPOBJS  = $(addprefix $(BUILD_DIR)/,$(notdir $(C_APPSRCS:.c=.o)))
 TESTOBJ  = $(addprefix $(BUILD_DIR)/,$(notdir $(C_TESTSRC:.c=.o)))
 
 ## Target and UnitTest HEX Files
-TARGET_FILE = $(BUILD_DIR)/$(TARGET).hex
-TEST_TARGET = $(TESTOBJ:.o=.hex)
+TARGET_FILE = $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
+TEST_TARGET = $(TESTOBJ:.o=.hex) $(TESTOBJ:.o=.bin)
 
 ### Linker script
 LDSCRIPT = Device_Startup/gcc_arm.ld
