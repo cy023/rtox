@@ -12,7 +12,7 @@
 TARGET = main
 
 # Upload Info.
-COMPORT    ?= COM13
+COMPORT    ?=
 UPLOAD_HEX ?= main
 
 ## MCU Info.
@@ -46,6 +46,7 @@ C_INCLUDES += -IDrivers/Library/StdDriver/inc
 C_INCLUDES += -IMiddleware/LittleFS
 C_INCLUDES += -IMiddleware/FreeRTOS/Source/include
 C_INCLUDES += -IMiddleware/FreeRTOS/Source/portable/GCC/ARM_CM4F
+C_INCLUDES += -IMiddleware/uLog
 
 ## Source Path
 C_SOURCES += $(wildcard Device_Startup/*.c)
@@ -63,6 +64,7 @@ C_SOURCES += $(wildcard Middleware/LittleFS/*.c)
 C_SOURCES += $(wildcard Middleware/FreeRTOS/Source/*.c)
 C_SOURCES += Middleware/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 C_SOURCES += Middleware/FreeRTOS/Source/portable/MemMang/heap_4.c
+C_SOURCES += $(wildcard Middleware/uLog/*.c)
 
 ASM_SOURCES += $(wildcard Device_Startup/*.S)
 
@@ -94,8 +96,8 @@ APPOBJS  = $(addprefix $(BUILD_DIR)/,$(notdir $(C_APPSRCS:.c=.o)))
 TESTOBJ  = $(addprefix $(BUILD_DIR)/,$(notdir $(C_TESTSRC:.c=.o)))
 
 ## Target and UnitTest HEX Files
-TARGET_FILE = $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
-TEST_TARGET = $(TESTOBJ:.o=.hex) $(TESTOBJ:.o=.bin)
+TARGET_FILE = $(BUILD_DIR)/$(TARGET).hex
+TEST_TARGET = $(TESTOBJ:.o=.hex)
 
 ### Linker script
 LDSCRIPT = Device_Startup/gcc_arm.ld
