@@ -37,6 +37,7 @@ LIBDIRS =
 ## Include Path
 C_INCLUDES  = -I.
 C_INCLUDES += -ICore
+C_INCLUDES += -IConfig
 C_INCLUDES += -IDevice_Startup
 C_INCLUDES += -IDrivers/CMSIS
 C_INCLUDES += -IDrivers/HAL
