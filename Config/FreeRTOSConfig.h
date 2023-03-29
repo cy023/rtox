@@ -94,12 +94,14 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 // ...
 
 /* Optional functions - most linkers will remove unused functions anyway. */
-#define INCLUDE_vTaskPrioritySet  1
-#define INCLUDE_uxTaskPriorityGet 1
-#define INCLUDE_vTaskDelete       1
-#define INCLUDE_vTaskSuspend      1
-#define INCLUDE_vTaskDelayUntil   1
-#define INCLUDE_vTaskDelay        1
+#define INCLUDE_vTaskPrioritySet       1
+#define INCLUDE_uxTaskPriorityGet      1
+#define INCLUDE_vTaskDelete            1
+#define INCLUDE_vTaskSuspend           1
+#define INCLUDE_vTaskDelayUntil        1
+#define INCLUDE_vTaskDelay             1
+#define INCLUDE_xTaskGetIdleTaskHandle 1
+#define INCLUDE_pxTaskGetStackStart    1
 
 /* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS
  * standard names. */
@@ -108,6 +110,6 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 #define xPortSysTickHandler SysTick_Handler
 
 /* A header file that defines trace macro can be included here. */
-// ...
+#include "SEGGER_SYSVIEW_FreeRTOS.h"
 
 #endif /* FREERTOS_CONFIG_H */
