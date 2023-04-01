@@ -677,25 +677,25 @@ int fputc(int ch, FILE *stream)
 
 #if defined (__GNUC__) && !defined(__ARMCC_VERSION)
 
-int _write (int fd, char *ptr, int len)
-{
-    int i = len;
+// int _write (int fd, char *ptr, int len)
+// {
+//     int i = len;
 
-    while(i--)
-    {
-        while(DEBUG_PORT->FIFOSTS & UART_FIFOSTS_TXFULL_Msk);
+//     while(i--)
+//     {
+//         while(DEBUG_PORT->FIFOSTS & UART_FIFOSTS_TXFULL_Msk);
 
-        if(*ptr == '\n')
-        {
-            DEBUG_PORT->DAT = '\r';
-            while(DEBUG_PORT->FIFOSTS & UART_FIFOSTS_TXFULL_Msk);
-        }
+//         if(*ptr == '\n')
+//         {
+//             DEBUG_PORT->DAT = '\r';
+//             while(DEBUG_PORT->FIFOSTS & UART_FIFOSTS_TXFULL_Msk);
+//         }
 
-        DEBUG_PORT->DAT = *ptr++;
+//         DEBUG_PORT->DAT = *ptr++;
 
-    }
-    return len;
-}
+//     }
+//     return len;
+// }
 
 int _read (int fd, char *ptr, int len)
 {

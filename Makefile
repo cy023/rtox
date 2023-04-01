@@ -47,6 +47,9 @@ C_INCLUDES += -IDrivers/Library/StdDriver/inc
 C_INCLUDES += -IMiddleware/LittleFS
 C_INCLUDES += -IMiddleware/FreeRTOS/Source/include
 C_INCLUDES += -IMiddleware/FreeRTOS/Source/portable/GCC/ARM_CM4F
+C_INCLUDES += -IMiddleware/SEGGER/Config
+C_INCLUDES += -IMiddleware/SEGGER/OS
+C_INCLUDES += -IMiddleware/SEGGER/SEGGER
 C_INCLUDES += -IMiddleware/uLog
 
 ## Source Path
@@ -65,9 +68,15 @@ C_SOURCES += $(wildcard Middleware/LittleFS/*.c)
 C_SOURCES += $(wildcard Middleware/FreeRTOS/Source/*.c)
 C_SOURCES += Middleware/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 C_SOURCES += Middleware/FreeRTOS/Source/portable/MemMang/heap_4.c
+C_SOURCES += $(wildcard Middleware/SEGGER/Config/*.c)
+C_SOURCES += $(wildcard Middleware/SEGGER/OS/*.c)
+C_SOURCES += $(wildcard Middleware/SEGGER/SEGGER/*.c)
+C_SOURCES += $(wildcard Middleware/SEGGER/SEGGER/Syscalls/*.c)
+C_SOURCES += Middleware/SEGGER/Rec/segger_uart_m480.c
 C_SOURCES += $(wildcard Middleware/uLog/*.c)
 
 ASM_SOURCES += $(wildcard Device_Startup/*.S)
+ASM_SOURCES += $(wildcard Middleware/SEGGER/SEGGER/*.S)
 
 ################################################################################
 # Project Architecture

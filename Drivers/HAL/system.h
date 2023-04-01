@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 
-#define PLL_CLOCK      192000000
+#define PLL_CLOCK      192000000UL
 #define SPI_FLASH_PORT SPI2
 
 /*******************************************************************************
