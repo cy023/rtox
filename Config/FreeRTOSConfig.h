@@ -13,7 +13,7 @@ extern uint32_t SystemCoreClock;
 
 #define configUSE_PREEMPTION           1
 #define configCPU_CLOCK_HZ             (SystemCoreClock)
-#define configTICK_RATE_HZ             ((portTickType) 1000)
+#define configTICK_RATE_HZ             ((portTickType) 400)
 #define configMAX_PRIORITIES           (5)
 #define configMINIMAL_STACK_SIZE       ((unsigned short) 50)
 #define configMAX_TASK_NAME_LEN        (10)

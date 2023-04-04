@@ -73,21 +73,21 @@ Done:
 
 static int _cbOnUARTTx(U8 *pChar)
 {
-    int r;
+    int res;
 
     // Not all bytes of <Hello> message sent to SysView yet?
     if (_SVInfo.NumBytesHelloSent < _TARGET_HELLO_SIZE) {
         *pChar = _abHelloMsg[_SVInfo.NumBytesHelloSent];
         _SVInfo.NumBytesHelloSent++;
-        r = 1;
+        res = 1;
         goto Done;
     }
-    r = SEGGER_RTT_ReadUpBufferNoLock(_SVInfo.ChannelID, pChar, 1);
-    if (r < 0) {  // Failed to read from up buffer?
-        r = 0;
+    res = SEGGER_RTT_ReadUpBufferNoLock(_SVInfo.ChannelID, pChar, 1);
+    if (res < 0) {  // Failed to read from up buffer?
+        res = 0;
     }
 Done:
-    return r;
+    return res;
 }
 
 void SEGGER_UART_init(U32 baud)
@@ -114,7 +114,29 @@ void HIF_UART_WaitForTxEnd(void)
  */
 void UART0_IRQHandler(void)
 {
-    // TODO:
+    uint32_t status;
+    uint8_t data;
+    int res;
+
+    status = UART0->INTSTS;
+
+    /* Receive Data Available Interrupt Enable */
+    if (status & UART_INTSTS_RDAINT_Msk) {  /* if RDA INT */
+        data = UART_READ(UART0);
+        _cbOnRx(data);
+    }
+
+    /* Transmit Holding Register Empty Interrupt Enable */
+    if (status & UART_INTSTS_THREINT_Msk) { /* if THRE INT */
+        while (UART_IS_TX_FULL(UART0));  /* Wait Tx is not full to transmit data */
+        res = _cbOnTx(&data);
+        if (res == 0) { // No more characters to send ?
+            /* Transmit Holding Register Empty Interrupt Disable */
+            UART_DISABLE_INT(UART0, UART_INTEN_THREIEN_Msk);
+        } else {
+            UART_WRITE(UART0, data); // Start transmission by writing to data register
+        }
+    }
 }
 
 /**
@@ -123,7 +145,7 @@ void UART0_IRQHandler(void)
 void HIF_UART_EnableTXEInterrupt(void)
 {
     // Transmitter Empty Interrupt Enable
-    UART0->INTEN |= UART_INTEN_TXENDIEN_Msk;
+    UART_ENABLE_INT(UART0, UART_INTEN_THREIEN_Msk);
 }
 
 /**
@@ -209,9 +231,14 @@ void HIF_UART_Init(uint32_t Baudrate,
     _cbOnRx = cbOnRx;
     _cbOnTx = cbOnTx;
 
+    /* Receive Data Available Interrupt Enable */
+    UART_ENABLE_INT(UART0, UART_INTEN_RDAIEN_Msk);
+    /* Transmit Holding Register Empty Interrupt Enable */
+    UART_ENABLE_INT(UART0, UART_INTEN_THREIEN_Msk);
+
     // Highest prio, so it is not disabled by embOS
-    NVIC_SetPriority(UART1_IRQn, 6);
-    NVIC_EnableIRQ(UART1_IRQn);
+    NVIC_SetPriority(UART0_IRQn, 6);
+    NVIC_EnableIRQ(UART0_IRQn);
 }
 
 #endif

@@ -40,33 +40,68 @@
 #include "NuMicro.h"
 #include "system.h"
 
-#define MILLI_SECOND_TICK (configTICK_RATE_HZ / 1000)
+void system_clock_init(void)
+{
+    /* Set XT1_OUT(PF.2) and XT1_IN(PF.3) to input mode */
+    PF->MODE &= ~(GPIO_MODE_MODE2_Msk | GPIO_MODE_MODE3_Msk);
+
+    /* Enable External XTAL (4~24 MHz) : 12MHz */
+    CLK_EnableXtalRC(CLK_PWRCTL_HXTEN_Msk);
+
+    /* Wait for HXT clock ready */
+    CLK_WaitClockReady(CLK_STATUS_HXTSTB_Msk);
+
+    /* Set core clock as PLL_CLOCK from PLL */
+    CLK_SetCoreClock(PLL_CLOCK);
+
+    /* Set PCLK0/PCLK1 to HCLK/2 */
+    CLK->PCLKDIV = (CLK_PCLKDIV_APB0DIV_DIV2 | CLK_PCLKDIV_APB1DIV_DIV2);
+
+    /* Update System Core Clock */
+    /* User can use SystemCoreClockUpdate() to calculate SystemCoreClock and
+     * CyclesPerUs automatically. */
+    SystemCoreClockUpdate();
+}
 
 void task1()
 {
+    // TickType_t xLastWakeTime = xTaskGetTickCount();
     while (1) {
         PH4 ^= 1;
-        vTaskDelay(MILLI_SECOND_TICK * 3000);
+        system_delay_ms(50); // blocking delay
+        taskYIELD();
+        // vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(100UL));
+        // vTaskDelay(pdMS_TO_TICKS(200));
     }
 }
 
 void task2()
 {
+    // TickType_t xLastWakeTime = xTaskGetTickCount();
     while (1) {
         PH5 ^= 1;
-        vTaskDelay(MILLI_SECOND_TICK * 1000);
+        system_delay_ms(50); // blocking delay
+        taskYIELD();
+        // vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(150UL));
+        // vTaskDelay(pdMS_TO_TICKS(300));
     }
 }
 /*-----------------------------------------------------------*/
 
 int main(void)
 {
-    system_init();
+    system_clock_init();
+
+    // Enable the CYCCNT counter.
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    DWT->CYCCNT = 0;
+    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+
+    SEGGER_UART_init(38400);
+    SEGGER_SYSVIEW_Conf();
 
     xTaskCreate(task1, "task1", 256, NULL, tskIDLE_PRIORITY + 2, NULL);
-    xTaskCreate(task2, "task2", 256, NULL, tskIDLE_PRIORITY + 1, NULL);
-
-    printf("FreeRTOS is starting ...\n");
+    xTaskCreate(task2, "task2", 256, NULL, tskIDLE_PRIORITY + 2, NULL);
 
     /* Start the scheduler. */
     vTaskStartScheduler();
