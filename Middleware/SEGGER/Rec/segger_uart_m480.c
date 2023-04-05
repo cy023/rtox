@@ -17,18 +17,17 @@ Purpose : Terminal control for Flasher using UART.
 #define OS_FSYS PLL_CLOCK  // MCU core frequency
 // ...
 
-typedef void UART_ON_RX_FUNC(uint8_t Data);
-typedef int UART_ON_TX_FUNC(uint8_t *pChar);
+typedef int (*uart_tx_fp_t)(uint8_t *pchar);
+typedef void (*uart_rx_fp_t)(uint8_t data);
 
-typedef UART_ON_TX_FUNC *UART_ON_TX_FUNC_P;
-typedef UART_ON_RX_FUNC *UART_ON_RX_FUNC_P;
-
-static UART_ON_RX_FUNC_P _cbOnRx;
-static UART_ON_TX_FUNC_P _cbOnTx;
+static struct uart_callback {
+    uart_tx_fp_t tx_cb;
+    uart_rx_fp_t rx_cb;
+} uart_cb_handler;
 
 void HIF_UART_Init(uint32_t Baudrate,
-                   UART_ON_TX_FUNC_P cbOnTx,
-                   UART_ON_RX_FUNC_P cbOnRx);
+                   uart_tx_fp_t uart_tx,
+                   uart_rx_fp_t uart_rx);
 
 #define _SERVER_HELLO_SIZE (4)
 #define _TARGET_HELLO_SIZE (4)
@@ -55,7 +54,7 @@ static void _StartSysView(void)
     }
 }
 
-static void _cbOnUARTRx(U8 Data)
+static void UART_RX_cb_func(U8 Data)
 {
     // Not all bytes of <Hello> message received by SysView yet?
     if (_SVInfo.NumBytesHelloRcvd < _SERVER_HELLO_SIZE) {
@@ -71,7 +70,7 @@ Done:
     return;
 }
 
-static int _cbOnUARTTx(U8 *pChar)
+static int UART_TX_cb_func(U8 *pChar)
 {
     int res;
 
@@ -92,7 +91,7 @@ Done:
 
 void SEGGER_UART_init(U32 baud)
 {
-    HIF_UART_Init(baud, _cbOnUARTTx, _cbOnUARTRx);
+    HIF_UART_Init(baud, UART_TX_cb_func, UART_RX_cb_func);
 }
 
 /**
@@ -123,13 +122,13 @@ void UART0_IRQHandler(void)
     /* Receive Data Available Interrupt Enable */
     if (status & UART_INTSTS_RDAINT_Msk) {  /* if RDA INT */
         data = UART_READ(UART0);
-        _cbOnRx(data);
+        uart_cb_handler.rx_cb(data);
     }
 
     /* Transmit Holding Register Empty Interrupt Enable */
     if (status & UART_INTSTS_THREINT_Msk) { /* if THRE INT */
         while (UART_IS_TX_FULL(UART0));  /* Wait Tx is not full to transmit data */
-        res = _cbOnTx(&data);
+        res = uart_cb_handler.tx_cb(&data);
         if (res == 0) { // No more characters to send ?
             /* Transmit Holding Register Empty Interrupt Disable */
             UART_DISABLE_INT(UART0, UART_INTEN_THREIEN_Msk);
@@ -152,12 +151,12 @@ void HIF_UART_EnableTXEInterrupt(void)
  * @brief HIF_UART_Init()
  *
  * @param Baudrate UART baudrate
- * @param cbOnTx TX callback function
- * @param cbOnRx RX callback function
+ * @param uart_tx TX callback function
+ * @param uart_rx RX callback function
  */
 void HIF_UART_Init(uint32_t Baudrate,
-                   UART_ON_TX_FUNC_P cbOnTx,
-                   UART_ON_RX_FUNC_P cbOnRx)
+                   uart_tx_fp_t uart_tx,
+                   uart_rx_fp_t uart_rx)
 {
     /***************************************************************************
      * Clock setting
@@ -228,8 +227,8 @@ void HIF_UART_Init(uint32_t Baudrate,
      * Setup callbacks which are called by ISR handler
      * and enable interrupt in NVIC
      **************************************************************************/
-    _cbOnRx = cbOnRx;
-    _cbOnTx = cbOnTx;
+    uart_cb_handler.tx_cb = uart_tx;
+    uart_cb_handler.rx_cb = uart_rx;
 
     /* Receive Data Available Interrupt Enable */
     UART_ENABLE_INT(UART0, UART_INTEN_RDAIEN_Msk);
