@@ -14,10 +14,10 @@ RTOX is an IoT development platform that uses the NUM487KM_DEVB board as its bas
 - Segger SystemView RTT
 
 ## Reference
-[NUM487KM_DEVB](https://github.com/cy023/NUM487KM_DEVB)
-[FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel)
-[W25Q128JV_HAL](https://github.com/cy023/W25Q128JV_HAL)
-[LittleFS](https://github.com/littlefs-project/littlefs)
-[lwIP](https://git.savannah.nongnu.org/cgit/lwip.git)
-[uLog](https://github.com/rdpoor/ulog)
-[SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/)
+- [NUM487KM_DEVB](https://github.com/cy023/NUM487KM_DEVB)
+- [FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel)
+- [W25Q128JV_HAL](https://github.com/cy023/W25Q128JV_HAL)
+- [LittleFS](https://github.com/littlefs-project/littlefs)
+- [lwIP](https://git.savannah.nongnu.org/cgit/lwip.git)
+- [uLog](https://github.com/rdpoor/ulog)
+- [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/)
